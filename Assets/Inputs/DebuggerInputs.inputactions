@@ -1,0 +1,45 @@
+{
+    "name": "DebuggerInputs",
+    "maps": [
+        {
+            "name": "Debug",
+            "id": "a40d8607-1456-44fe-a318-a8d72146f4ae",
+            "actions": [
+                {
+                    "name": "Toggle",
+                    "type": "Button",
+                    "id": "0b95fc81-6321-4b8d-8280-b196c86f4b01",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "11b112ce-f108-4422-a87e-dbb39025933b",
+                    "path": "<Keyboard>/#(!)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c57e5110-d90f-4d3f-aab4-7be9ea97bf42",
+                    "path": "<Touchscreen>/touch*/Press",
+                    "interactions": "MultiTap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
