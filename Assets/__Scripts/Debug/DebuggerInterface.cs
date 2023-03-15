@@ -39,11 +39,11 @@ public class DebuggerInterface : MonoBehaviour
     {
         if (IsEnabled)
         {
-            OnDebuggerEnabled.Invoke();
+            OnDebuggerEnabled?.Invoke();
         }
         else
         {
-            OnDebuggerDisabled.Invoke();
+            OnDebuggerDisabled?.Invoke();
         }
     }
 

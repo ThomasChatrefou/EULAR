@@ -1,19 +1,22 @@
 using System.Collections;
 using UnityEngine;
 
-public class TransformPositionViewer : MonoBehaviour
+public class DebugViewerComponent : MonoBehaviour
 {
     [SerializeField] private float debugRefreshRate = 0.2f;
 
-    private DebuggerInterface debugger;
-    private GuiContainer container;
+    protected DebuggerInterface debugger;
+    protected GuiContainer container;
 
-    private enum DebugVariables
+    protected virtual void AddDebugVariablesToContainer() { }
+    protected virtual void UpdateDebugVariablesValue() { }
+
+    public virtual string ContainerName
     {
-        Position,
+        get { return name; }
     }
 
-    private void Awake()
+    protected void Awake()
     {
         debugger = DebuggerInterface.Instance;
         if (debugger == null)
@@ -25,9 +28,8 @@ public class TransformPositionViewer : MonoBehaviour
 
     private void OnEnable()
     {
-        container = debugger.CreateContainer(name);
-        container.Add((int)DebugVariables.Position, "Position ");
-
+        container = debugger.CreateContainer(ContainerName);
+        AddDebugVariablesToContainer();
         debugger.OnDebuggerEnabled += StartUpdateDebugValues;
         debugger.OnDebuggerDisabled += StopUpdateDebugValues;
 
@@ -64,8 +66,7 @@ public class TransformPositionViewer : MonoBehaviour
     {
         while (debugger.IsEnabled)
         {
-            print(name);
-            container.UpdateVal((int)DebugVariables.Position, transform.position);
+            UpdateDebugVariablesValue();
             yield return new WaitForSeconds(debugRefreshRate);
         }
     }
