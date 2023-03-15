@@ -3,25 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+
 using ChangedValueEvent = UnityEngine.Events.UnityEvent<int>;
 
 public class Node : MonoBehaviour
 {
     // called with old value as parameter
     public ChangedValueEvent OnValueChanged;
+    public UnityEngine.Events.UnityEvent OnNodeInit;
 
     // values should be within positive or null
     // negative value means unitialized
     private int m_Val = -1;
 
-    private HashSet<Node> m_Neighbours = null;
+    private HashSet<Node> m_Neighbours = new HashSet<Node>();
 
-    private Graph m_Graph;
+    private Graph m_Graph = null;
 
     private void Awake()
     {
-        if (OnValueChanged == null)
+        if(OnValueChanged == null)
             OnValueChanged = new ChangedValueEvent();
+        if(OnNodeInit == null)
+            OnNodeInit = new UnityEngine.Events.UnityEvent();
     }
 
     public void SetValue(int iNewVal)
@@ -31,21 +35,37 @@ public class Node : MonoBehaviour
         OnValueChanged.Invoke(oldVal);
     }
 
-    private void SetGraph(Graph iGraph)
+    private void _SetGraph(Graph iGraph)
     {
         m_Graph = iGraph;
     }
 
     public void Init(Graph iGraph)
     {
-        m_Neighbours = new HashSet<Node>();
-        SetGraph(iGraph);
+        Assert.IsNull(m_Graph);
+        _SetGraph(iGraph);
         SetValue(0);
+        OnNodeInit.Invoke();
     }
 
     private void AddNeighbour(Node iNewNeighbour)
     {
         m_Neighbours.Add(iNewNeighbour);
+    }
+
+    public Graph GetGraph()
+    {
+        return m_Graph;
+    }
+
+    public HashSet<Node> GetNeighbours()
+    {
+        return m_Neighbours;
+    }
+
+    public int GetValue()
+    {
+        return m_Val;
     }
         
     public static void AddLink(Node iNode1, Node iNode2)
@@ -70,20 +90,35 @@ public class Node : MonoBehaviour
     }
 
     // we ensure that:
-    // * there is no self linked node 
+    // * there is no self linked node
     // * all links are non-directionnal
-    public bool CheckNodeIntegrity()
+    public bool CheckNodeIntegrity(bool iVerbose = true)
     {
-        if (m_Neighbours.Contains(this))
-            return false;
+        if(m_Neighbours.Contains(this))
+        {
+            if(iVerbose)
+                Debug.LogError("Node is self linked");
 
-        if (m_Neighbours.Count <= 0)
             return false;
+        }
+
+        if(m_Neighbours.Count <= 0)
+        {
+            if(iVerbose)
+                Debug.LogError("Node has no neighbour");
+
+            return false;
+        }
 
         foreach(Node neighbour in m_Neighbours)
         {
             if(!neighbour.HasNeighbour(this))
+            {
+                if(iVerbose)
+                    Debug.LogError("Node has a one-sided link");
+
                 return false;
+            }
         }
 
         return true;
@@ -94,13 +129,13 @@ public class Node : MonoBehaviour
         return m_Neighbours.Contains(iPotentialNeighbour);
     }
 
-    public Graph GetGraph()
+    public void ResetNode()
     {
-        return m_Graph;
-    }
+        int oldVal = m_Val;
+        m_Val = -1;
+        m_Neighbours.Clear();
+        m_Graph = null;
 
-    public HashSet<Node> GetNeighbours()
-    {
-        return m_Neighbours;
+        OnValueChanged.Invoke(oldVal);
     }
 }
