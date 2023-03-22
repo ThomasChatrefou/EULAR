@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Security.Principal;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Events;
 
 using Rand = UnityEngine.Random;
@@ -27,19 +30,17 @@ public class Graph : MonoBehaviour
         return m_MaxValue;
     }
 
-    // creating nodes from gameobjects
-    // with random links
-    // return one node of the graph
-    public List<Node> CreateRandomGraphFromObjects(GameObject[] iPoints, int iMaxValue = 3)
+    // creating random links between given nodes
+    // the higher iLinkScattering is, the less links there will be in the graph
+    public List<Node> CreateRandomGraphFromObjects(List<Node> iNodes, int iMaxValue = 3, float iLinkScattering = 2)
     {
         m_MaxValue = iMaxValue;
 
-        // node init
-        foreach(GameObject point in iPoints)
+        // nodes init
+        foreach(Node node in iNodes)
         {
-            Node pointNode = point.AddComponent<Node>();
-            pointNode.Init(this);
-            m_Nodes.Add(pointNode);
+            node.Init(this);
+            m_Nodes.Add(node);
         }
 
         // creating random links
@@ -49,9 +50,13 @@ public class Graph : MonoBehaviour
             // choosing a random number of link between 1 and maxLinkAvailable
             // we don't want to many links, so we twist the distribution a bit
             int nbAvailableLinks = m_Nodes.Count - 1;
-            int nbNoLinkSq = Rand.Range(1, nbAvailableLinks * nbAvailableLinks);
-            int nbNoLink = (int)Math.Ceiling(Math.Sqrt(nbNoLinkSq)); // this is the number of nodes that won't get linked to the current node
-            int nbLink = nbAvailableLinks - nbNoLink;
+
+            // we use the distribution given by the inverse of f on the interval [0, f(1)]
+            // where f(x) = 1 / Math.Pow(x, iLinkScattering) - (1 / Math.Pow(nbAvailableLinks, iLinkScattering))
+            double b = 1 / Math.Pow(nbAvailableLinks, iLinkScattering);
+            double upperBound = 1 - b;
+            double randDouble = Rand.Range(0, (float)upperBound);
+            int nbLink = Mathf.FloorToInt((float)(1 / Math.Pow(randDouble + b, 1 / iLinkScattering)));
 
             // creating links by random sampling
             int[] nodeToLinkIndices = _RandomSampleNeighbours(currentNodeIdx, nbLink);
@@ -61,11 +66,39 @@ public class Graph : MonoBehaviour
             currentNodeIdx++;
         }
 
+        // parse nodes to check wether the graph is in one piece
+        // if not, add a new link and parse again
+        HashSet<Node> visitedNodes = new HashSet<Node>();
+        _VisitNode(m_Nodes[0], visitedNodes);
+        while(visitedNodes.Count != m_Nodes.Count)
+        {
+            // finding a node that is not linked to the visited nodes
+            Node nodeToLink = null;
+            foreach(Node node in m_Nodes)
+            {
+                if(visitedNodes.Contains(node))
+                    continue;
+
+                nodeToLink = node;
+                break;
+            }
+            Assert.IsNotNull(nodeToLink);
+
+            int visitedNodeIdx = Rand.Range(0, visitedNodes.Count);
+            HashSet<Node>.Enumerator itVisitedNode = visitedNodes.GetEnumerator();
+            for(int ii = 0; ii <= visitedNodeIdx; ii++)
+                itVisitedNode.MoveNext();
+            Assert.IsNotNull(itVisitedNode.Current);
+
+            Node.AddLink(nodeToLink, itVisitedNode.Current);
+            _VisitNode(nodeToLink, visitedNodes);
+        }
+
         // scramble solution
-        foreach(Node node in m_Nodes)
+        foreach (Node node in m_Nodes)
         {
             int nAction = Rand.Range(0, m_MaxValue);
-            for (int i = 0; i < nAction; i++)
+            for (int i = 0; i <= nAction; i++)
                 node.NextValueOnNeighbours();
         }
 
@@ -96,26 +129,54 @@ public class Graph : MonoBehaviour
     }
 
     // we ensure that:
-    // * there is no self linked node 
-    // * all links are non-directionnal
-    public bool CheckGraphIntegrity()
+    // * graph is not empty
+    // * all nodes are valid
+    // * graph is in one piece
+    public bool CheckGraphIntegrity(bool iVerbose = true)
     {
+        if(m_Nodes.Count == 0)
+        {
+            if(iVerbose)
+                Debug.LogError("Graph is empty");
+
+            return false;
+        }
+
         foreach(Node node in m_Nodes)
         {
-            if (!node.CheckNodeIntegrity())
+            if(!node.CheckNodeIntegrity(iVerbose))
                 return false;
         }
 
-        // #TODO need to check that graph is in one piece
+        HashSet<Node> visitedNodes = new HashSet<Node>();
+        _VisitNode(m_Nodes[0], visitedNodes);
+        if(visitedNodes.Count != m_Nodes.Count)
+        {
+            if(iVerbose)
+                Debug.LogError("Graph is not in one piece");
+
+            return false;
+        }
 
         return true;
     }
 
+    private void _VisitNode(Node iNode, HashSet<Node> iVisitedNodes)
+    {
+        if(iVisitedNodes.Contains(iNode))
+            return;
+
+        iVisitedNodes.Add(iNode);
+        foreach(Node neighbour in iNode.GetNeighbours())
+            _VisitNode(neighbour, iVisitedNodes);
+    }
+
     public void DestroyGraph()
     {
-        foreach (Node node in m_Nodes)
-            Destroy(node);
+        foreach(Node node in m_Nodes)
+            node.ResetNode();
 
+        m_Nodes.Clear();
         m_MaxValue = -1;
     }
 }
