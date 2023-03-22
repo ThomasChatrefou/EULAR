@@ -6,6 +6,7 @@ using UnityEngine;
 public class LinkViewer : MonoBehaviour
 {
     private Node m_Node;
+    private Graph m_NodeGraph;
     private List<GameObject> m_LinksView = new List<GameObject>();
 
     // Start is called before the first frame update
@@ -17,7 +18,9 @@ public class LinkViewer : MonoBehaviour
 
     void OnInitNode()
     {
-        m_Node.GetGraph().OnInitGraph.AddListener(CreateLinks);
+        m_NodeGraph = m_Node.GetGraph();
+        m_NodeGraph.OnInitGraph.AddListener(CreateLinks);
+        m_NodeGraph.OnPendingGraphDesctruction.AddListener(RemoveGraphListeners);
     }
 
     void CreateLinks()
@@ -59,6 +62,13 @@ public class LinkViewer : MonoBehaviour
         m_LinksView.Clear();
     }
 
+    void RemoveGraphListeners()
+    {
+        _DestroyLinks();
+        m_NodeGraph.OnInitGraph.RemoveListener(CreateLinks);
+        m_NodeGraph.OnPendingGraphDesctruction.RemoveListener(RemoveGraphListeners);
+        m_NodeGraph = null;
+    }
 
     void OnDestroy()
     {

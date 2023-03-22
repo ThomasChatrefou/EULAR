@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -85,8 +84,13 @@ public class Node : MonoBehaviour
 
     public void NextValueOnNeighbours()
     {
+        m_Graph.AddMoveNumber();
+
         foreach(Node neighbour in m_Neighbours)
             neighbour.NextValue();
+
+        if(m_Graph.CheckGraphCompletion())
+            m_Graph.OnGraphCompletion.Invoke(m_Graph.GetNbMove());
     }
 
     // we ensure that:

@@ -1,20 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Principal;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 
 using Rand = UnityEngine.Random;
+using HasEndedEvent = UnityEngine.Events.UnityEvent<int>;
 
 public class Graph : MonoBehaviour
 {
     public UnityEvent OnInitGraph;
+    public UnityEvent OnPendingGraphDesctruction;
+    public HasEndedEvent OnGraphCompletion;
 
+    private bool hasBeenInit = false;
     // value of nodes shall be within 0 and m_MaxValue
     // negative value means unitialized
     private int m_MaxValue = -1;
+    // record the number of move until completion
+    private int m_NbMove = 0;
 
     private List<Node> m_Nodes = new List<Node>();
 
@@ -23,6 +28,12 @@ public class Graph : MonoBehaviour
     {
         if(OnInitGraph == null)
             OnInitGraph = new UnityEvent();
+
+        if(OnPendingGraphDesctruction == null)
+            OnPendingGraphDesctruction = new UnityEvent();
+
+        if(OnGraphCompletion == null)
+            OnGraphCompletion = new HasEndedEvent();
     }
 
     public int GetMaxNodeValue()
@@ -95,12 +106,15 @@ public class Graph : MonoBehaviour
         }
 
         // scramble solution
-        foreach (Node node in m_Nodes)
+        foreach(Node node in m_Nodes)
         {
-            int nAction = Rand.Range(0, m_MaxValue);
-            for (int i = 0; i <= nAction; i++)
+            int nAction = Rand.Range(0, iMaxValue + 1);
+            for(int i = 0; i < nAction; i++)
                 node.NextValueOnNeighbours();
         }
+
+        m_NbMove = 0; // reset number of move after scrambling
+        hasBeenInit = true;
 
         OnInitGraph.Invoke();
 
@@ -178,5 +192,38 @@ public class Graph : MonoBehaviour
 
         m_Nodes.Clear();
         m_MaxValue = -1;
+
+        OnPendingGraphDesctruction.Invoke();
+    }
+    
+    // completed if the nodes have the same value
+    public bool CheckGraphCompletion()
+    {
+        if(m_MaxValue < 0 || m_Nodes.Count <= 0 || !hasBeenInit) // not initialized
+            return false;
+
+        int testValue = m_Nodes[0].GetValue();
+        foreach(Node node in m_Nodes)
+        {
+            if(testValue != node.GetValue())
+                return false;
+        }
+
+        return true;
+    }
+
+    public int GetNbMove()
+    {
+        return m_NbMove;
+    }
+
+    public void AddMoveNumber()
+    {
+        m_NbMove++;
+    }
+
+    public List<Node> GetNodes()
+    {
+        return m_Nodes;
     }
 }

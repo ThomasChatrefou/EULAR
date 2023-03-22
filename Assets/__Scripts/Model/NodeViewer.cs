@@ -19,7 +19,6 @@ public class NodeViewer : MonoBehaviour
         m_Node.OnValueChanged.AddListener(OnValueChanged);
     }
 
-    // Update is called once per frame
     void OnValueChanged(int iOldVal)
     {
         int val = m_Node.GetValue();
