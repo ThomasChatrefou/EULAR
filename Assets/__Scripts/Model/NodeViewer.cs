@@ -7,6 +7,11 @@ using UnityEngine;
 public class NodeViewer : MonoBehaviour
 {
     [SerializeField] GraphManager m_GraphManager;
+    public GraphManager GraphManager 
+    { 
+        get { return m_GraphManager; }
+        set { m_GraphManager = value;}
+    }
 
     private Renderer m_Renderer;
     private Node m_Node;
@@ -19,7 +24,6 @@ public class NodeViewer : MonoBehaviour
         m_Node.OnValueChanged.AddListener(OnValueChanged);
     }
 
-    // Update is called once per frame
     void OnValueChanged(int iOldVal)
     {
         int val = m_Node.GetValue();
