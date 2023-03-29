@@ -14,7 +14,8 @@ public class PlaneController : MonoBehaviour
     public List<GameObject> PlanesDetected { get; private set; } = new();
     public event Action PlaneDetectionDone;
 
-    private int trackablesStartIndex = 0;
+
+    public int PlanesChangedEventFiredCount { get; private set; }
 
     private void Awake()
     {
@@ -26,11 +27,23 @@ public class PlaneController : MonoBehaviour
     public void StartPlaneDetection()
     {
         planeManager.enabled = true;
+        PlanesChangedEventFiredCount = 0;
     }
 
     private void OnPlanesChanged(ARPlanesChangedEventArgs planesData)
     {
-        if (planeManager.trackables.count == PlanesToDetect)
+        ++PlanesChangedEventFiredCount;
+
+        int activePlanes = 0;
+        foreach (ARPlane plane in planeManager.trackables)
+        {
+            if (plane.gameObject.activeSelf)
+            {
+                ++activePlanes;
+            }
+        }
+
+        if (activePlanes >= PlanesToDetect)
         {
             SaveDetectedPlanes();
             planeManager.enabled = false;
@@ -40,7 +53,6 @@ public class PlaneController : MonoBehaviour
 
     private void SaveDetectedPlanes()
     {
-        PlanesDetected.Clear();
         PlanesDetected.Capacity = planeManager.trackables.count;
         
         if (PlanesDetected.Count != 0) 
@@ -48,19 +60,21 @@ public class PlaneController : MonoBehaviour
             Debug.LogWarning(name + " : you are adding planes in a list that is not empty");
         }
 
-        TrackableCollection<ARPlane>.Enumerator planesEnumerator = planeManager.trackables.GetEnumerator();
-        for (int i = 0; i < trackablesStartIndex; i++)
+        int activePlanes = 0;
+        foreach (ARPlane plane in planeManager.trackables)
         {
-            planesEnumerator.MoveNext();
-        }
+            if (activePlanes == PlanesToDetect)
+            {
+                plane.gameObject.SetActive(false);
+                continue;
+            }
 
-        for (int i = 0; i < PlanesToDetect; i++)
-        {
-            ARPlane plane = planesEnumerator.Current;
-            PlanesDetected.Add(plane.gameObject);
-            planesEnumerator.MoveNext();
+            if (plane.gameObject.activeSelf)
+            {
+                ++activePlanes;
+                PlanesDetected.Add(plane.gameObject);
+            }
         }
-        trackablesStartIndex += PlanesToDetect;
     }
 
     public void HidePlanesVisualizer()
@@ -70,5 +84,25 @@ public class PlaneController : MonoBehaviour
             ARPlaneMeshVisualizer visualiser = plane.GetComponent<ARPlaneMeshVisualizer>();
             visualiser.enabled = false;
         }
+    }
+
+    public void ClearSavedPlanes()
+    {
+        foreach (GameObject plane in PlanesDetected)
+        {
+            plane.SetActive(false);
+        }
+
+        PlanesDetected.Clear();
+    }
+
+    public bool GetPlaneManagerEnabled()
+    {
+        return planeManager.enabled;
+    }
+
+    public int GetTrackablesCount()
+    {
+        return planeManager.trackables.count;
     }
 }

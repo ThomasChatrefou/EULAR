@@ -4,12 +4,12 @@ using UnityEngine.UI;
 public class PlayerInterfaceController : MonoBehaviour
 {
     [Header("Buttons")]
-    [SerializeField] private Transform detectButton;
-    [SerializeField] private Transform generateButton;
-    [SerializeField] private Transform resetButton;
+    [SerializeField] private Button detectButton;
+    [SerializeField] private Button generateButton;
+    [SerializeField] private Button resetButton;
 
     [Space(20)]
-    [SerializeField] private Transform nodeToDetectSlider;
+    [SerializeField] private Slider nodeToDetectSlider;
 
     [Space(20)]
     [SerializeField] private PlaneController planeController;
@@ -19,32 +19,32 @@ public class PlayerInterfaceController : MonoBehaviour
     {
         planeController.PlaneDetectionDone += OnPlaneDetectionDone;
 
-        detectButton.GetComponent<Button>().onClick.AddListener(playerController.OnDetectButtonPressed);
+        detectButton.onClick.AddListener(playerController.OnDetectButtonPressed);
+        detectButton.onClick.AddListener(OnDetectButtonPressed);
 
-        Button generate = generateButton.GetComponent<Button>();
-        generate.onClick.AddListener(playerController.OnGeneratePuzzlePressed);
-        generate.onClick.AddListener(OnGeneratePuzzlePressed);
+        generateButton.onClick.AddListener(playerController.OnGeneratePuzzlePressed);
+        generateButton.onClick.AddListener(OnGeneratePuzzlePressed);
 
-        Button reset = resetButton.GetComponent<Button>();
-        reset.onClick.AddListener(playerController.OnResetPuzzlePressed);
-        reset.onClick.AddListener(OnResetPuzzlePressed);
+        resetButton.onClick.AddListener(playerController.OnResetPuzzlePressed);
+        resetButton.onClick.AddListener(OnResetPuzzlePressed);
 
         detectButton.gameObject.SetActive(true);
         nodeToDetectSlider.gameObject.SetActive(true);
         generateButton.gameObject.SetActive(false);
         resetButton.gameObject.SetActive(false);
 
-        Slider slider = nodeToDetectSlider.GetComponent<Slider>();
-        if (slider != null)
-        {
-            slider.onValueChanged.AddListener(OnNodeToDetectValueChanged);
-        }
+        nodeToDetectSlider.onValueChanged.AddListener(OnNodeToDetectValueChanged);
+        OnNodeToDetectValueChanged(nodeToDetectSlider.value);
+    }
+
+    private void OnDetectButtonPressed()
+    {
+        detectButton.gameObject.SetActive(false);
+        nodeToDetectSlider.gameObject.SetActive(false);
     }
 
     private void OnPlaneDetectionDone()
     {
-        detectButton.gameObject.SetActive(false);
-        nodeToDetectSlider.gameObject.SetActive(false);
         generateButton.gameObject.SetActive(true);
     }
 

@@ -7,6 +7,7 @@ public class PlaneToGraphLinker : MonoBehaviour
     [SerializeField] private GraphManager graphManager;
     [SerializeField] private ARPlaneManager planeManager;
     [SerializeField] private PlaneController planeController;
+    [SerializeField] private Camera arCamera;
 
     private void Awake()
     {
@@ -23,6 +24,7 @@ public class PlaneToGraphLinker : MonoBehaviour
 
         planeManager.planesChanged += OnPlanesChanged;
         planeController.PlaneDetectionDone += OnPlaneDetectionDone;
+        arCamera = Camera.main;
     }
 
     private void OnPlanesChanged(ARPlanesChangedEventArgs planesData)
@@ -49,6 +51,12 @@ public class PlaneToGraphLinker : MonoBehaviour
 
             NodeViewer nodeView = plane.GetComponentInChildren<NodeViewer>();
             nodeView.GraphManager = graphManager;
+
+            LookAtCameraBehaviour lookAtMe = plane.GetComponentInChildren<LookAtCameraBehaviour>();
+            lookAtMe.MainCamera = arCamera.transform;
+
+            Canvas nodeCanvas = plane.GetComponentInChildren<Canvas>();
+            nodeCanvas.worldCamera = arCamera;
         }
 
         //graphManager.CreateGraphFromNodes(nodes);

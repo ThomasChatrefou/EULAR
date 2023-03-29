@@ -34,5 +34,6 @@ public class PlayerController : MonoBehaviour
     {
         graphManager.DestroyGraph();
         graphManager.DestroyNodes();
+        planeController.ClearSavedPlanes();
     }
 }
