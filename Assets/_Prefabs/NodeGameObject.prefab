@@ -231,7 +231,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 8813443057107668521}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 2864715246766182080}
   - component: {fileID: 981962262109221032}
   - component: {fileID: 3182646590772183485}
+  - component: {fileID: 4847259516982675439}
   m_Layer: 5
   m_Name: NodeCanvas
   m_TagString: Untagged
@@ -293,8 +294,8 @@ RectTransform:
   m_GameObject: {fileID: 7517408410791393583}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7218843770544619896}
   m_Father: {fileID: 1158615400937743351}
@@ -366,3 +367,15 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &4847259516982675439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517408410791393583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a64de443d2119a8449323d507d1cdaef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
