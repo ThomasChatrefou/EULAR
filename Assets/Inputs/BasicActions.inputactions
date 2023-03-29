@@ -19,10 +19,21 @@
                 {
                     "name": "",
                     "id": "c06c6cea-7a56-4001-9eca-ff403c4fc6d8",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
-                    "groups": "TouchScreen;KBM",
+                    "groups": "KBM",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0191592b-6810-403a-a232-f63f63cda194",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "TouchScreen",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
