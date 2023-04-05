@@ -2,7 +2,7 @@
     "name": "BasicActions",
     "maps": [
         {
-            "name": "Basic",
+            "name": "UserInteraction",
             "id": "342c7fd0-ec68-4917-969f-553289f2c37e",
             "actions": [
                 {
@@ -10,6 +10,15 @@
                     "type": "Button",
                     "id": "c16ff03c-e555-453c-b939-b08c62bf6111",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Cursor",
+                    "type": "Value",
+                    "id": "c57801dc-30a1-4e5d-8bc9-f469817e17cb",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -30,11 +39,33 @@
                 {
                     "name": "",
                     "id": "0191592b-6810-403a-a232-f63f63cda194",
-                    "path": "<Touchscreen>/primaryTouch/position",
+                    "path": "<Touchscreen>/Press",
                     "interactions": "",
                     "processors": "",
                     "groups": "TouchScreen",
                     "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a4b4a083-5904-469d-9a1e-f7214081964f",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "Cursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6e85840b-5f7a-4f30-9db6-ec89263f6df9",
+                    "path": "<Touchscreen>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "TouchScreen",
+                    "action": "Cursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
