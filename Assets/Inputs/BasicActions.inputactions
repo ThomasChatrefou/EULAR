@@ -7,9 +7,9 @@
             "actions": [
                 {
                     "name": "Click",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "c16ff03c-e555-453c-b939-b08c62bf6111",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -19,7 +19,7 @@
                 {
                     "name": "",
                     "id": "c06c6cea-7a56-4001-9eca-ff403c4fc6d8",
-                    "path": "<Mouse>/position",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "KBM",

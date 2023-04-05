@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 using Rand = UnityEngine.Random;
 using HasEndedEvent = UnityEngine.Events.UnityEvent<int>;
+using UnityEngine.Analytics;
 
 public class Graph : MonoBehaviour
 {
@@ -50,6 +51,9 @@ public class Graph : MonoBehaviour
         // nodes init
         foreach(Node node in iNodes)
         {
+            if(node == null)
+                continue;
+
             node.Init(this);
             m_Nodes.Add(node);
         }
@@ -195,7 +199,7 @@ public class Graph : MonoBehaviour
 
         OnPendingGraphDesctruction.Invoke();
     }
-    
+
     // completed if the nodes have the same value
     public bool CheckGraphCompletion()
     {
